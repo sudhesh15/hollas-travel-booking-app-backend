@@ -116,6 +116,7 @@ function displayAlertMessage(res, message) {
 }
 
 app.get('/getAllTreks', async (req,res) => {
+  console.log("inside getAllTreks")
   res.json(
     await Post.find()
       .sort({createdAt: 1})
