@@ -59,7 +59,6 @@ app.post('/login', async (req, res) => {
         username,
       });
       ifLoggedIn = true;
-      console.log("token===>", token);
     });
   } else {
     res.status(400).json('wrong credentials');
@@ -116,9 +115,10 @@ function displayAlertMessage(res, message) {
 }
 
 app.get('/getAllTreks', async (req,res) => {
-  console.log("inside getAllTreks")
+  const currentDate = new Date();
+  const currentDateString = currentDate.toISOString().split('T')[0];
   res.json(
-    await Post.find()
+    await Post.find({ expDate: { $gte: currentDateString } })
       .sort({createdAt: 1})
       .limit(100)
   );
@@ -139,7 +139,7 @@ app.post('/createTrekkerDetails', upload.single('file'), async (req,res) => {
 app.get('/viewAllTreks', async (req,res) => {
   if(ifLoggedIn){
     res.json(
-      await Post.find()
+      await Post.find({})
         .sort({createdAt: 1})
         .limit(100)
     );
@@ -177,6 +177,26 @@ app.get('/treks/:id', async (req, res) => {
     const treksInfo = await Post.findById(id);
     res.json(treksInfo);
   }
+});
+
+app.get('/trekParticipantsCount/:trekName', async (req, res) => {
+  const {trekName} = req.params;
+  const count = await Trekker.aggregate([
+    {
+      $match: {
+        trekName: trekName
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalTrekkers: {
+          $sum: { $toInt: "$totalTrekkers" }
+        }
+      }
+    }
+  ]);
+  res.json(count);
 });
 
 app.listen(PORT);

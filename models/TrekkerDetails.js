@@ -7,8 +7,8 @@ const TrekkersSchema = new Schema({
   phoneNumber:String,
   whatsAppNumber:String,
   email:String,
-  age:String,
-  totalTrekkers:String,
+  age:Number,
+  totalTrekkers:Number,
   trekName:String,
 }, {
   timestamps: true,

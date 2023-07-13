@@ -3,12 +3,12 @@ const {Schema,model} = mongoose;
 
 const PostSchema = new Schema({
   trekName:String,
-  totalSpots:String,
+  totalSpots:Number,
   numberOfDays:String,
   startDate:String,
   endDate:String,
   trekLocation:String,
-  trekPrice:String,
+  trekPrice:Number,
   expDate:String,
   pickUpLocation:String,
   pickUpGmapLocation:String,
@@ -16,7 +16,7 @@ const PostSchema = new Schema({
   difficultyLevel:String,
   trekLength:String,
   altitude:String,
-  minAge:String,
+  minAge:Number,
   author:{type:Schema.Types.ObjectId, ref:'User'},
 }, {
   timestamps: true,
