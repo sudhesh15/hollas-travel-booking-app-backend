@@ -17,6 +17,10 @@ const PostSchema = new Schema({
   trekLength:String,
   altitude:String,
   minAge:Number,
+  whatsIncluded: Array,
+  whatsNotIncluded: Array,
+  thingsToCarry: Array,
+  thumbnailImage: String,
   author:{type:Schema.Types.ObjectId, ref:'User'},
 }, {
   timestamps: true,
