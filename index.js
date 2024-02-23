@@ -25,51 +25,12 @@ app.use((req, res, next) => {
   next();
 });
 
-const salt = bcrypt.genSaltSync(10);
-const secret = "aszxde12we0dsjm3";
-
 app.use(cors({credentials:true, origin: `${BASE_URL}`}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 mongoose.connect(`${MONGO_URL}`);
-
-let ifLoggedIn = false;
-
-app.post('/register', async (req,res)=>{
-  const {firstName, lastName, dateOfBirth, username, password} = req.body;
-  try{
-    const userDoc = await User.create({firstName, lastName, dateOfBirth, username, password:bcrypt.hashSync(password, salt), type: "user"});
-    res.json(userDoc);
-  }catch(err){
-    res.status(400).json(err);
-  }
-});
-
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const userDoc = await User.findOne({ username });
-  const result = bcrypt.compareSync(password, userDoc.password);
-  if (result) {
-    jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
-      if (err) throw err;
-      res.cookie('token', token, { httpOnly: true }).json({
-        id: userDoc._id,
-        username,
-      });
-      ifLoggedIn = true;
-    });
-  } else {
-    res.status(400).json('wrong credentials');
-  }
-});
-
-app.post('/logout', (req, res) => {
-  ifLoggedIn = false;
-  res.clearCookie('token');
-  res.status(200).json('Logged out successfully');
-});
 
 app.post('/post', upload.single('file'), async (req,res) => {
     let whatsIncluded = [];
@@ -146,15 +107,6 @@ app.put('/post', upload.single('file'), async (req,res) => {
   });
   res.json(putDoc);
 });
-
-function displayAlertMessage(res, message) {
-  const html = `
-    <script>
-      window.location.href = '/';
-    </script>
-  `;
-  res.send(html);
-}
 
 app.get('/getAllTreks', async (req,res) => {
   const currentDate = new Date();
